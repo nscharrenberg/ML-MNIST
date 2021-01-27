@@ -18,7 +18,8 @@ import javafx.util.Duration;
 import java.util.List;
 import java.util.function.Function;
 
-public class ExtendedAnimatedFlowContainer extends AnimatedFlowContainer implements FlowContainer<StackPane> {
+public class ExtendedAnimatedFlowContainer extends AnimatedFlowContainer implements FlowContainer<StackPane>
+{
     private final StackPane view;
     private final Duration duration;
     private Function<AnimatedFlowContainer, List<KeyFrame>> animationProducer;
