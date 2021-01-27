@@ -50,6 +50,11 @@
             <artifactId>ikonli-fontawesome5-pack</artifactId>
             <version>12.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.processing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.3.7</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
