@@ -1,116 +1,143 @@
 package com.nscharrenberg.controllers;
 
-import java.io.IOException;
-
-import com.jfoenix.controls.*;
-import com.nscharrenberg.datafx.ExtendedAnimatedFlowContainer;
-import io.datafx.controller.ViewController;
-import io.datafx.controller.flow.Flow;
-import io.datafx.controller.flow.FlowException;
-import io.datafx.controller.flow.FlowHandler;
-import io.datafx.controller.flow.context.FXMLViewFlowContext;
-import io.datafx.controller.flow.context.ViewFlowContext;
-import javafx.animation.Transition;
-import javafx.application.Platform;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDrawer;
+import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXToolbar;
+import com.nscharrenberg.App;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
-import static io.datafx.controller.flow.container.ContainerAnimations.SWIPE_LEFT;
+public class MainController {
+    @FXML
+    private BorderPane root;
 
-@ViewController(value = "/fxml/Main.fxml", title = "Drawing Recognition")
-public final class MainController {
-    @FXMLViewFlowContext
-    private ViewFlowContext context;
-
-    @FXML
-    private StackPane root;
-
-    @FXML
-    private StackPane titleBurgerContainer;
-    @FXML
-    private JFXHamburger titleBurger;
-
-    @FXML
-    private StackPane optionsBurger;
-    @FXML
-    private JFXRippler optionsRippler;
-    @FXML
     private JFXDrawer drawer;
 
-    private JFXPopup toolbarPopup;
+    private JFXToolbar toolbar;
 
-    @PostConstruct
-    public void init() throws IOException, FlowException {
-        final JFXTooltip burgerTooltip = new JFXTooltip("Open drawer");
+    private StackPane drawerMenuPane;
 
-        drawer.setOnDrawerOpening(e -> {
-            final Transition animation = titleBurger.getAnimation();
-            burgerTooltip.setText("Close drawer");
-            animation.setRate(1);
-            animation.play();
-        });
-        drawer.setOnDrawerClosing(e -> {
-            final Transition animation = titleBurger.getAnimation();
-            burgerTooltip.setText("Open drawer");
-            animation.setRate(-1);
-            animation.play();
-        });
-        titleBurgerContainer.setOnMouseClicked(e -> {
-            if (drawer.isClosed() || drawer.isClosing()) {
-                drawer.open();
-            } else {
-                drawer.close();
-            }
-        });
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ui/popup/MainPopup.fxml"));
-        loader.setController(new InputController());
-        toolbarPopup = new JFXPopup(loader.load());
-
-        optionsBurger.setOnMouseClicked(e ->
-                toolbarPopup.show(optionsBurger,
-                        JFXPopup.PopupVPosition.TOP,
-                        JFXPopup.PopupHPosition.RIGHT,
-                        -12,
-                        15));
-        JFXTooltip.setVisibleDuration(Duration.millis(3000));
-        JFXTooltip.install(titleBurgerContainer, burgerTooltip, Pos.BOTTOM_CENTER);
-
-        // create the inner flow and content
-        context = new ViewFlowContext();
-        // set the default controller
-        Flow innerFlow = new Flow(CanvasController.class);
-
-        final FlowHandler flowHandler = innerFlow.createHandler(context);
-        context.register("ContentFlowHandler", flowHandler);
-        context.register("ContentFlow", innerFlow);
-        final Duration containerAnimationDuration = Duration.millis(320);
-        drawer.setContent(flowHandler.start(new ExtendedAnimatedFlowContainer(containerAnimationDuration, SWIPE_LEFT)));
-        context.register("ContentPane", drawer.getContent().get(0));
-
-        // side controller will add links to the content flow
-        Flow sideMenuFlow = new Flow(SideMenuController.class);
-        final FlowHandler sideMenuFlowHandler = sideMenuFlow.createHandler(context);
-        drawer.setSidePane(sideMenuFlowHandler.start(new ExtendedAnimatedFlowContainer(containerAnimationDuration,
-                SWIPE_LEFT)));
-        drawer.open();
+    public void setView(Node node) {
+        root.setCenter(node);
     }
 
-    public static final class InputController {
-        @FXML
-        private JFXListView<?> toolbarPopupList;
+    private void borderPaneSizeListener() {
+        root.sceneProperty().addListener(((observableValue, oldScene, newScene) -> {
+            if (oldScene == null && newScene != null) {
+                newScene.windowProperty().addListener(((observableValue1, oldWindow, newWindow) -> {
+                    if (oldWindow == null & newWindow != null) {
+                        getStage().widthProperty().addListener((obs, oldVal, newVal) -> {
+                            root.setPrefWidth(newVal.doubleValue());
+                        });
 
-        // close application
-        @FXML
-        private void submit() {
-            if (toolbarPopupList.getSelectionModel().getSelectedIndex() == 1) {
-                Platform.exit();
+                        getStage().heightProperty().addListener((obs, oldVal, newVal) -> {
+                            root.setPrefHeight(newVal.doubleValue());
+                        });
+                    }
+                }));
             }
+        }));
+    }
+
+    @FXML
+    private void initialize() {
+        loadLayout();
+    }
+
+    private void loadLayout() {
+        borderPaneSizeListener();
+        initTopMenu();
+        initSideMenu();
+    }
+
+    private Stage getStage() {
+        return (Stage) root.getScene().getWindow();
+    }
+
+    private void initTopMenu() {
+        toolbar = new JFXToolbar();
+        toolbar.setLeftItems(new Label("Drawing Recognition"));
+
+        this.root.setTop(toolbar);
+    }
+
+    private void initSideMenu() {
+        drawer = new JFXDrawer();
+        drawerMenuPane = new StackPane();
+
+        JFXListView<Label> drawerListView = new JFXListView<>();
+
+        Label canvasLbl = new Label("Canvas");
+        canvasLbl.setId("canvas");
+
+        Label trainAndTestLbl = new Label("Train and Test");
+        trainAndTestLbl.setId("trainAndTest");
+
+        Label machineLearningLbl = new Label("Machine Learning");
+        machineLearningLbl.setId("machineLearning");
+
+        drawerListView.getItems().addAll(canvasLbl, trainAndTestLbl, machineLearningLbl);
+
+        drawerListView.setOnMouseClicked(e -> {
+            try {
+                openNewView(drawerListView.getSelectionModel().getSelectedItem().getId());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        drawerMenuPane.getChildren().add(drawerListView);
+
+        drawer.setSidePane(drawerMenuPane);
+        drawer.setDefaultDrawerSize(200);
+        drawer.setOverLayVisible(false);
+        drawer.setResizableOnDrag(false);
+        drawer.open();
+
+        this.root.setLeft(drawer);
+    }
+
+    private void openNewView(String selectedItem) throws IOException {
+        if (selectedItem.equals("trainAndTest")) {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/ui/TrainAndTest.fxml"));
+            TrainAndTestController trainAndTestController = new TrainAndTestController();
+            loader.setController(trainAndTestController);
+
+            this.root.setCenter(loader.load());
+        } else if (selectedItem.equals("machineLearning")) {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/ui/MachineLearning.fxml"));
+            MachineLearningController machineLearningController = new MachineLearningController();
+            loader.setController(machineLearningController);
+            this.root.setCenter(loader.load());
+        } else {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/ui/Canvas.fxml"));
+            CanvasController canvasController = new CanvasController();
+            loader.setController(canvasController);
+
+            this.root.setCenter(loader.load());
         }
+    }
+
+    public JFXToolbar getToolbar() {
+        return this.toolbar;
+    }
+
+    public JFXDrawer getDrawer() {
+        return this.drawer;
+    }
+
+    public StackPane getDrawerMenuPane() {
+        return this.drawerMenuPane;
     }
 }

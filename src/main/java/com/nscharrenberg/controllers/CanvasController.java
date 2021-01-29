@@ -1,27 +1,75 @@
 package com.nscharrenberg.controllers;
 
-import com.jfoenix.controls.JFXPopup;
-import com.jfoenix.controls.JFXTooltip;
-import com.nscharrenberg.datafx.ExtendedAnimatedFlowContainer;
 import com.nscharrenberg.utils.DrawingCanvas;
-import io.datafx.controller.ViewController;
-import io.datafx.controller.flow.Flow;
-import io.datafx.controller.flow.FlowException;
-import io.datafx.controller.flow.FlowHandler;
-import io.datafx.controller.flow.context.ViewFlowContext;
-import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.layout.Pane;
-import javafx.util.Duration;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 
-import static io.datafx.controller.flow.container.ContainerAnimations.SWIPE_LEFT;
-
-@ViewController(value = "/fxml/ui/Canvas.fxml", title = "Drawing Recognition")
 public class CanvasController {
-    
+    @FXML
+    private AnchorPane root;
+
+    private Canvas canvas;
+
+    private GraphicsContext gc;
+
+    private double lastKnownWidth;
+    private double lastKnownHeight;
+
+    @FXML
+    public void initialize() {
+        draw();
+    }
+
+    private void draw() {
+        canvas = new Canvas(500, 500);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                lastKnownWidth = root.getWidth();
+                lastKnownHeight = root.getHeight();
+                canvas.setWidth(root.getWidth());
+                canvas.setHeight(root.getHeight());
+            }
+        });
+
+        root.widthProperty().addListener(((observableValue, number, t1) -> {
+            if (t1.doubleValue() != lastKnownWidth) {
+                canvas.setWidth(t1.doubleValue());
+            }
+        }));
+
+        root.heightProperty().addListener(((observableValue, number, t1) -> {
+            if (t1.doubleValue() != lastKnownHeight) {
+                canvas.setHeight(t1.doubleValue());
+            }
+        }));
+
+        gc = canvas.getGraphicsContext2D();
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(5);
+
+        gc.fill();
+
+        gc.setLineWidth(3);
+
+        canvas.setOnMousePressed(event -> {
+            gc.beginPath();
+            gc.moveTo(event.getX(), event.getY());
+            gc.stroke();
+        });
+
+        canvas.setOnMouseDragged(event -> {
+            gc.lineTo(event.getX(), event.getY());
+            gc.stroke();
+        });
+
+        root.getChildren().add(canvas);
+    }
 }
