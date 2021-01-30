@@ -60,6 +60,8 @@ public class App extends Application {
 
         stage.setScene(App.factory.getAppRepository().getScene());
         stage.show();
+
+        App.factory.getAppRepository().setStage(stage);
     }
 
 

@@ -1,14 +1,13 @@
 package com.nscharrenberg.repositories;
 
-import com.jfoenix.controls.JFXDrawer;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXToolbar;
+import com.jfoenix.controls.*;
 import com.nscharrenberg.enums.AvailablePages;
 import com.nscharrenberg.interfaces.IAppRepository;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class AppRepository implements IAppRepository {
     public final static String APP_TITLE = "Drawing Recognition";
@@ -23,6 +22,8 @@ public class AppRepository implements IAppRepository {
     private JFXListView<Label> sidebarMenuItems;
     private BorderPane borderPane;
     private Scene scene;
+    private Stage stage;
+    private JFXSnackbar snackbar;
 
     @Override
     public AvailablePages getSelectedPage() {
@@ -101,12 +102,37 @@ public class AppRepository implements IAppRepository {
     }
 
     @Override
-    public JFXListView getSidebarMenuItems() {
+    public JFXListView<Label> getSidebarMenuItems() {
         return sidebarMenuItems;
     }
 
     @Override
-    public void setSidebarMenuItems(JFXListView sidebarMenuItems) {
+    public void setSidebarMenuItems(JFXListView<Label> sidebarMenuItems) {
         this.sidebarMenuItems = sidebarMenuItems;
+    }
+
+    @Override
+    public Stage getStage() {
+        return stage;
+    }
+
+    @Override
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    @Override
+    public JFXSnackbar getSnackbar() {
+        return snackbar;
+    }
+
+    @Override
+    public void setSnackbar(JFXSnackbar snackbar) {
+        this.snackbar = snackbar;
+    }
+
+    @Override
+    public void enqueueNotification(String message) {
+        this.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(new JFXSnackbarLayout(message)));
     }
 }

@@ -1,9 +1,6 @@
 package com.nscharrenberg.controllers;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDrawer;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXToolbar;
+import com.jfoenix.controls.*;
 import com.nscharrenberg.App;
 import com.nscharrenberg.enums.AvailablePages;
 import com.nscharrenberg.factory.IFactory;
@@ -61,6 +58,7 @@ public class MainController {
         borderPaneSizeListener();
         initTopMenu();
         initSideMenu();
+        initSnackbar();
     }
 
     private Stage getStage() {
@@ -100,6 +98,10 @@ public class MainController {
         App.factory.getAppRepository().getSidebarMenuDrawer().open();
 
         App.factory.getAppRepository().getBorderPane().setLeft(App.factory.getAppRepository().getSidebarMenuDrawer());
+    }
+
+    private void initSnackbar() {
+        App.factory.getAppRepository().setSnackbar(new JFXSnackbar(App.factory.getAppRepository().getBorderPane()));
     }
 
     private void openNewView(String selectedItem) throws IOException {
