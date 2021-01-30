@@ -5,6 +5,9 @@ import com.jfoenix.controls.JFXDecorator;
 import com.nscharrenberg.controllers.CanvasController;
 import com.nscharrenberg.controllers.IController;
 import com.nscharrenberg.controllers.MainController;
+import com.nscharrenberg.factory.IFactory;
+import com.nscharrenberg.factory.LocalFactory;
+import com.nscharrenberg.repositories.AppRepository;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -24,17 +27,11 @@ import java.io.IOException;
  */
 public class App extends Application {
 
-    private static Scene scene;
-    private static JFXDecorator decorator;
+    public final static IFactory factory = new LocalFactory(new AppRepository());
+
 
     public static void main(String[] args) {
         launch();
-    }
-
-    public static void setRoot(String fxml, IController controller) throws IOException {
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/" + fxml + ".fxml"));
-        loader.setController(controller);
-        ((JFXDecorator) scene.getRoot()).setContent(loader.load());
     }
 
     @Override
@@ -56,12 +53,11 @@ public class App extends Application {
 
         stage.setTitle("Drawing Recognition");
 
-
-        Scene scene = new Scene(decorator, width, height);
-        final ObservableList<String> stylesheets = scene.getStylesheets();
+        App.factory.getAppRepository().setScene(new Scene(decorator, width, height));
+        final ObservableList<String> stylesheets = App.factory.getAppRepository().getScene().getStylesheets();
         stylesheets.add(JFoenixResources.load("/css/style.css").toExternalForm());
 
-        stage.setScene(scene);
+        stage.setScene(App.factory.getAppRepository().getScene());
         stage.show();
     }
 
