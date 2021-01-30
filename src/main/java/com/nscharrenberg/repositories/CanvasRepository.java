@@ -2,15 +2,14 @@ package com.nscharrenberg.repositories;
 
 import com.jfoenix.controls.JFXDrawer;
 import com.jfoenix.controls.JFXListView;
+import com.nscharrenberg.enums.DrawingOptions;
 import com.nscharrenberg.interfaces.ICanvasRepository;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 public class CanvasRepository implements ICanvasRepository {
     public static final double DRAWING_MENU_WIDTH = 150;
@@ -20,6 +19,7 @@ public class CanvasRepository implements ICanvasRepository {
     private JFXDrawer sidebarMenuDrawer;
     private StackPane sidebarMenuPane;
     private JFXListView<VBox> sidebarMenuItems;
+    private DrawingOptions selectedDrawingOption;
 
     private Canvas canvas;
     private GraphicsContext gc;
@@ -92,5 +92,15 @@ public class CanvasRepository implements ICanvasRepository {
     @Override
     public void setRoot(AnchorPane root) {
         this.root = root;
+    }
+
+    @Override
+    public DrawingOptions getSelectedDrawingOption() {
+        return selectedDrawingOption;
+    }
+
+    @Override
+    public void setSelectedDrawingOption(DrawingOptions selectedDrawingOption) {
+        this.selectedDrawingOption = selectedDrawingOption;
     }
 }

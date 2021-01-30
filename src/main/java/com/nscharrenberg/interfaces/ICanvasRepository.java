@@ -2,6 +2,7 @@ package com.nscharrenberg.interfaces;
 
 import com.jfoenix.controls.JFXDrawer;
 import com.jfoenix.controls.JFXListView;
+import com.nscharrenberg.enums.DrawingOptions;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -39,4 +40,8 @@ public interface ICanvasRepository {
     AnchorPane getRoot();
 
     void setRoot(AnchorPane root);
+
+    DrawingOptions getSelectedDrawingOption();
+
+    void setSelectedDrawingOption(DrawingOptions option);
 }
