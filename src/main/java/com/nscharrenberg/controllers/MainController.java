@@ -7,6 +7,7 @@ import com.jfoenix.controls.JFXToolbar;
 import com.nscharrenberg.App;
 import com.nscharrenberg.enums.AvailablePages;
 import com.nscharrenberg.factory.IFactory;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -90,6 +91,7 @@ public class MainController {
         });
 
         App.factory.getAppRepository().getSidebarMenuPane().getChildren().add(App.factory.getAppRepository().getSidebarMenuItems());
+        App.factory.getAppRepository().getSidebarMenuItems().setPadding(new Insets(20, 0, 0, 0));
 
         App.factory.getAppRepository().getSidebarMenuDrawer().setSidePane(App.factory.getAppRepository().getSidebarMenuPane());
         App.factory.getAppRepository().getSidebarMenuDrawer().setDefaultDrawerSize(200);
@@ -109,6 +111,7 @@ public class MainController {
             loader.setController(trainAndTestController);
 
             App.factory.getAppRepository().getBorderPane().setCenter(loader.load());
+            App.factory.getAppRepository().getBorderPane().setRight(null);
 
         } else if (selectedItem.equals(AvailablePages.MACHINE_LEARNING.getId())) {
             App.factory.getAppRepository().setSelectedPage(AvailablePages.MACHINE_LEARNING);
@@ -117,8 +120,10 @@ public class MainController {
             MachineLearningController machineLearningController = new MachineLearningController();
             loader.setController(machineLearningController);
             App.factory.getAppRepository().getBorderPane().setCenter(loader.load());
+
+            App.factory.getAppRepository().getBorderPane().setRight(null);
         } else {
-            App.factory.getAppRepository().setSelectedPage(AvailablePages.MACHINE_LEARNING);
+            App.factory.getAppRepository().setSelectedPage(AvailablePages.CANVAS);
 
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/ui/Canvas.fxml"));
             CanvasController canvasController = new CanvasController();
@@ -126,5 +131,7 @@ public class MainController {
 
             App.factory.getAppRepository().getBorderPane().setCenter(loader.load());
         }
+
+        App.factory.getAppRepository().getTopMenu().setLeftItems(new Label(App.factory.getAppRepository().getPageTitle()));
     }
 }

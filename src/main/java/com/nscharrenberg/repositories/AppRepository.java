@@ -11,7 +11,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 public class AppRepository implements IAppRepository {
-    private final static String APP_TITLE = "Drawing Recognition";
+    public final static String APP_TITLE = "Drawing Recognition";
+    public final static double DRAWER_MENU_WIDTH = 300;
 
     private AvailablePages selectedPage = AvailablePages.CANVAS;
     private String pageTitle = getFullPageTitle(AvailablePages.CANVAS.getName());

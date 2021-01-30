@@ -8,6 +8,7 @@ import com.nscharrenberg.controllers.MainController;
 import com.nscharrenberg.factory.IFactory;
 import com.nscharrenberg.factory.LocalFactory;
 import com.nscharrenberg.repositories.AppRepository;
+import com.nscharrenberg.repositories.CanvasRepository;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -27,7 +28,7 @@ import java.io.IOException;
  */
 public class App extends Application {
 
-    public final static IFactory factory = new LocalFactory(new AppRepository());
+    public final static IFactory factory = new LocalFactory(new AppRepository(), new CanvasRepository());
 
 
     public static void main(String[] args) {
