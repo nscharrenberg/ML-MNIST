@@ -1,116 +1,139 @@
 package com.nscharrenberg.controllers;
 
-import java.io.IOException;
-
 import com.jfoenix.controls.*;
-import com.nscharrenberg.datafx.ExtendedAnimatedFlowContainer;
-import io.datafx.controller.ViewController;
-import io.datafx.controller.flow.Flow;
-import io.datafx.controller.flow.FlowException;
-import io.datafx.controller.flow.FlowHandler;
-import io.datafx.controller.flow.context.FXMLViewFlowContext;
-import io.datafx.controller.flow.context.ViewFlowContext;
-import javafx.animation.Transition;
+import com.nscharrenberg.App;
+import com.nscharrenberg.enums.AvailablePages;
+import com.nscharrenberg.factory.IFactory;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
-import static io.datafx.controller.flow.container.ContainerAnimations.SWIPE_LEFT;
-
-@ViewController(value = "/fxml/Main.fxml", title = "Drawing Recognition")
-public final class MainController {
-    @FXMLViewFlowContext
-    private ViewFlowContext context;
-
+public class MainController {
     @FXML
-    private StackPane root;
+    private BorderPane root;
 
-    @FXML
-    private StackPane titleBurgerContainer;
-    @FXML
-    private JFXHamburger titleBurger;
-
-    @FXML
-    private StackPane optionsBurger;
-    @FXML
-    private JFXRippler optionsRippler;
-    @FXML
-    private JFXDrawer drawer;
-
-    private JFXPopup toolbarPopup;
-
-    @PostConstruct
-    public void init() throws IOException, FlowException {
-        final JFXTooltip burgerTooltip = new JFXTooltip("Open drawer");
-
-        drawer.setOnDrawerOpening(e -> {
-            final Transition animation = titleBurger.getAnimation();
-            burgerTooltip.setText("Close drawer");
-            animation.setRate(1);
-            animation.play();
-        });
-        drawer.setOnDrawerClosing(e -> {
-            final Transition animation = titleBurger.getAnimation();
-            burgerTooltip.setText("Open drawer");
-            animation.setRate(-1);
-            animation.play();
-        });
-        titleBurgerContainer.setOnMouseClicked(e -> {
-            if (drawer.isClosed() || drawer.isClosing()) {
-                drawer.open();
-            } else {
-                drawer.close();
-            }
-        });
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ui/popup/MainPopup.fxml"));
-        loader.setController(new InputController());
-        toolbarPopup = new JFXPopup(loader.load());
-
-        optionsBurger.setOnMouseClicked(e ->
-                toolbarPopup.show(optionsBurger,
-                        JFXPopup.PopupVPosition.TOP,
-                        JFXPopup.PopupHPosition.RIGHT,
-                        -12,
-                        15));
-        JFXTooltip.setVisibleDuration(Duration.millis(3000));
-        JFXTooltip.install(titleBurgerContainer, burgerTooltip, Pos.BOTTOM_CENTER);
-
-        // create the inner flow and content
-        context = new ViewFlowContext();
-        // set the default controller
-        Flow innerFlow = new Flow(CanvasController.class);
-
-        final FlowHandler flowHandler = innerFlow.createHandler(context);
-        context.register("ContentFlowHandler", flowHandler);
-        context.register("ContentFlow", innerFlow);
-        final Duration containerAnimationDuration = Duration.millis(320);
-        drawer.setContent(flowHandler.start(new ExtendedAnimatedFlowContainer(containerAnimationDuration, SWIPE_LEFT)));
-        context.register("ContentPane", drawer.getContent().get(0));
-
-        // side controller will add links to the content flow
-        Flow sideMenuFlow = new Flow(SideMenuController.class);
-        final FlowHandler sideMenuFlowHandler = sideMenuFlow.createHandler(context);
-        drawer.setSidePane(sideMenuFlowHandler.start(new ExtendedAnimatedFlowContainer(containerAnimationDuration,
-                SWIPE_LEFT)));
-        drawer.open();
+    public void setView(Node node) {
+        App.factory.getAppRepository().getBorderPane().setCenter(node);
     }
 
-    public static final class InputController {
-        @FXML
-        private JFXListView<?> toolbarPopupList;
+    private void borderPaneSizeListener() {
+        App.factory.getAppRepository().getBorderPane().sceneProperty().addListener(((observableValue, oldScene, newScene) -> {
+            if (oldScene == null && newScene != null) {
+                newScene.windowProperty().addListener(((observableValue1, oldWindow, newWindow) -> {
+                    if (oldWindow == null & newWindow != null) {
+                        getStage().widthProperty().addListener((obs, oldVal, newVal) -> {
+                            App.factory.getAppRepository().getBorderPane().setPrefWidth(newVal.doubleValue());
+                        });
 
-        // close application
-        @FXML
-        private void submit() {
-            if (toolbarPopupList.getSelectionModel().getSelectedIndex() == 1) {
-                Platform.exit();
+                        getStage().heightProperty().addListener((obs, oldVal, newVal) -> {
+                            App.factory.getAppRepository().getBorderPane().setPrefHeight(newVal.doubleValue());
+                        });
+                    }
+                }));
             }
+        }));
+    }
+
+    @FXML
+    private void initialize() {
+        App.factory.getAppRepository().setBorderPane(root);
+        App.factory.getAppRepository().setTopMenu(new JFXToolbar());
+        App.factory.getAppRepository().setSidebarMenuDrawer(new JFXDrawer());
+        App.factory.getAppRepository().setSidebarMenuPane(new StackPane());
+        App.factory.getAppRepository().setSidebarMenuItems(new JFXListView<>());
+        loadLayout();
+    }
+
+    private void loadLayout() {
+        borderPaneSizeListener();
+        initTopMenu();
+        initSideMenu();
+        initSnackbar();
+    }
+
+    private Stage getStage() {
+        return (Stage) App.factory.getAppRepository().getBorderPane().getScene().getWindow();
+    }
+
+    private void initTopMenu() {
+        App.factory.getAppRepository().getTopMenu().setLeftItems(new Label(App.factory.getAppRepository().getPageTitle()));
+
+        this.root.setTop(App.factory.getAppRepository().getTopMenu());
+    }
+
+    private void initSideMenu() {
+
+        for (AvailablePages page : AvailablePages.values()) {
+            Label tempLbl = new Label(page.getName());
+            tempLbl.setId(page.getId());
+
+            App.factory.getAppRepository().getSidebarMenuItems().getItems().add(tempLbl);
         }
+
+        App.factory.getAppRepository().getSidebarMenuItems().setOnMouseClicked(e -> {
+            try {
+                openNewView(App.factory.getAppRepository().getSidebarMenuItems().getSelectionModel().getSelectedItem().getId());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        App.factory.getAppRepository().getSidebarMenuPane().getChildren().add(App.factory.getAppRepository().getSidebarMenuItems());
+        App.factory.getAppRepository().getSidebarMenuItems().setPadding(new Insets(20, 0, 0, 0));
+
+        App.factory.getAppRepository().getSidebarMenuDrawer().setSidePane(App.factory.getAppRepository().getSidebarMenuPane());
+        App.factory.getAppRepository().getSidebarMenuDrawer().setDefaultDrawerSize(200);
+        App.factory.getAppRepository().getSidebarMenuDrawer().setOverLayVisible(false);
+        App.factory.getAppRepository().getSidebarMenuDrawer().setResizableOnDrag(false);
+        App.factory.getAppRepository().getSidebarMenuDrawer().open();
+
+        App.factory.getAppRepository().getBorderPane().setLeft(App.factory.getAppRepository().getSidebarMenuDrawer());
+    }
+
+    private void initSnackbar() {
+        App.factory.getAppRepository().setSnackbar(new JFXSnackbar(App.factory.getAppRepository().getBorderPane()));
+    }
+
+    private void openNewView(String selectedItem) throws IOException {
+        if (selectedItem.equals(AvailablePages.TRAIN_AND_TEST.getId())) {
+            App.factory.getAppRepository().setSelectedPage(AvailablePages.TRAIN_AND_TEST);
+
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/ui/TrainAndTest.fxml"));
+            TrainAndTestController trainAndTestController = new TrainAndTestController();
+            loader.setController(trainAndTestController);
+
+            App.factory.getAppRepository().getBorderPane().setCenter(loader.load());
+            App.factory.getAppRepository().getBorderPane().setRight(null);
+
+        } else if (selectedItem.equals(AvailablePages.MACHINE_LEARNING.getId())) {
+            App.factory.getAppRepository().setSelectedPage(AvailablePages.MACHINE_LEARNING);
+
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/ui/MachineLearning.fxml"));
+            MachineLearningController machineLearningController = new MachineLearningController();
+            loader.setController(machineLearningController);
+            App.factory.getAppRepository().getBorderPane().setCenter(loader.load());
+
+            App.factory.getAppRepository().getBorderPane().setRight(null);
+        } else {
+            App.factory.getAppRepository().setSelectedPage(AvailablePages.CANVAS);
+
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/ui/Canvas.fxml"));
+            CanvasController canvasController = new CanvasController();
+            loader.setController(canvasController);
+
+            App.factory.getAppRepository().getBorderPane().setCenter(loader.load());
+        }
+
+        App.factory.getAppRepository().getTopMenu().setLeftItems(new Label(App.factory.getAppRepository().getPageTitle()));
     }
 }

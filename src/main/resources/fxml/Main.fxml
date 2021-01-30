@@ -1,43 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import com.jfoenix.transitions.hamburger.HamburgerBackArrowBasicTransition?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.String?>
 
-<StackPane fx:id="root" xmlns:fx="http://javafx.com/fxml/1"
-           xmlns="http://javafx.com/javafx/2.2">
-    <BorderPane>
-        <top>
-            <VBox spacing="20">
-                <JFXToolbar>
-                    <leftItems>
-                        <JFXRippler maskType="CIRCLE" style="-fx-ripple-color: WHITE;">
-                            <StackPane fx:id="titleBurgerContainer">
-                                <JFXHamburger fx:id="titleBurger">
-                                    <HamburgerBackArrowBasicTransition />
-                                </JFXHamburger>
-                            </StackPane>
-                        </JFXRippler>
-                        <Label>Machine Learning Drawing Recognition</Label>
-                    </leftItems>
-                    <rightItems>
-                        <JFXRippler fx:id="optionsRippler" maskType="CIRCLE" style="-fx-ripple-color:WHITE;">
-                            <StackPane fx:id="optionsBurger">
-                                <JFXHamburger styleClass="jfx-options-burger"/>
-                            </StackPane>
-                        </JFXRippler>
-                    </rightItems>
-                </JFXToolbar>
-            </VBox>
-        </top>
-        <center>
-            <JFXDrawer fx:id="drawer" defaultDrawerSize="250" direction="LEFT">
-                <styleClass>
-                    <String fx:value="body"/>
-                </styleClass>
-            </JFXDrawer>
-        </center>
-    </BorderPane>
-</StackPane>
+<?import com.jfoenix.controls.JFXToolbar?>
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+</BorderPane>
