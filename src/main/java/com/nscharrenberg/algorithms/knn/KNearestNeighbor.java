@@ -17,4 +17,9 @@ public class KNearestNeighbor implements IAlgorithm {
     public void predict(String model, String image) {
 
     }
+
+    @Override
+    public void saveModel(String directory) {
+
+    }
 }

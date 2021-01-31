@@ -17,7 +17,8 @@ public class ImageML
         ImageBuilder builder = new ImageBuilder(IMAGE_WIDTH, IMAGE_HEIGHT);
         DataImporter importer;
 
-        for(int i=0; i<NUM_FILES; i++){
+        for(int i=0; i<NUM_FILES; i++)
+        {
             importer = new DataImporter("data" + i);
             for(int j=0; j<NUM_IMAGES; j++){
                 int[] bytes = importer.readNextBytes(IMAGE_WIDTH * IMAGE_HEIGHT);
@@ -29,6 +30,10 @@ public class ImageML
         }
 
         System.out.println("Finished creating all images!");
+    }
+    public void decodeScreen()
+    {
+
     }
     public int[][] convertTo2D(int[] arr, int width, int height){
         int[][] result = new int[width][height];
@@ -47,7 +52,8 @@ public class ImageML
 
         private DataInputStream in;
 
-        public DataImporter(String filename){
+        public DataImporter(String filename)
+        {
             in = new DataInputStream(getClass().getResourceAsStream("/" + filename));
         }
 
