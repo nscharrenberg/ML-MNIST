@@ -18,6 +18,7 @@ public class Training {
     }
 
     // TODO: Select Training Dataset
+    public void setDataSet(String directory){}
 
     // TODO: Convert Training Dataset to their respective Gray Scale Binary file (ImageML method call)
 
