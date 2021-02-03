@@ -2,8 +2,6 @@ package com.nscharrenberg;
 
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.JFXDecorator;
-import com.nscharrenberg.controllers.CanvasController;
-import com.nscharrenberg.controllers.IController;
 import com.nscharrenberg.controllers.MainController;
 import com.nscharrenberg.factory.IFactory;
 import com.nscharrenberg.factory.LocalFactory;
@@ -13,15 +11,9 @@ import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 /**
  * JavaFX App
